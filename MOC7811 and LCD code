@@ -1,0 +1,52 @@
+#include <LCD.h>
+#include <LiquidCrystal_I2C.h> // F Malpartida's NewLiquidCrystal library
+#define I2C_ADDR 0x3F //I2C Address for controller
+#define En_pin 2
+#define Rw_pin 1
+#define Rs_pin 0
+#define D4_pin 4
+#define D5_pin 5
+#define D6_pin 6
+#define D7_pin 7
+#define BACKLIGHT 3
+
+LiquidCrystal_I2C lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin);
+
+
+int ruptPin = 9; // select the input pin for the interrupter
+int val = 0; // variable to store the value coming from the sensor
+int i=0;
+int k=0;
+float lengthh=0;
+void setup()
+{
+  Serial.begin(250000); // set up Serial library at 9600 bps
+  pinMode(2,INPUT);
+  lcd.begin (16,2);
+  lcd.setBacklightPin(BACKLIGHT,POSITIVE);
+  lcd.setBacklight(HIGH);
+  lcd.home (); 
+}
+
+void loop()
+{
+    val = digitalRead(ruptPin); // read the value from the sensor
+    if(k==0&&val==0)
+    {
+      i++;
+      k=1;
+    }
+    if(val==1)
+    {
+      k=0;
+    }
+    
+    lengthh=(i*0.11)/8;  //pi*d=0.11,(d=3.5e-2)...and there are 8 teeths 
+    Serial.print(val); Serial.print("                    ");   Serial.println(lengthh);  // print the sensor value to the serial monitor
+
+lcd.setCursor(0,0);
+lcd.print("Length:");
+lcd.print(lengthh);
+lcd.print(" mtr");
+lcd.print("     ");
+}
